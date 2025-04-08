@@ -41,7 +41,7 @@ jobs:
 
     - name: Deploy to environment
       run: |
-        sam deploy --stack-name serverless-crud-api-test \
+        sam deploy --stack-name serverless-crud-api \
                    --region eu-west-3 \
                    --no-confirm-changeset \
                    --capabilities CAPABILITY_IAM \
