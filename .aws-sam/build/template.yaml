@@ -1,22 +1,21 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: Serverless CRUD API using AWS SAM
-
 Globals:
   Function:
     Timeout: 10
     Runtime: python3.9
     MemorySize: 128
     Environment:
-      Variables:  
-        TABLE_NAME: !Ref ItemsTable # Dynamically set the table name
-
+      Variables:
+        TABLE_NAME:
+          Ref: ItemsTable
 Resources:
   CrudFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: src/
-      Handler: app.lambda_handler  # Points to the handler in app.py
+      CodeUri: CrudFunction
+      Handler: app.lambda_handler
       Description: Lambda function handling all CRUD operations
       Events:
         Create:
@@ -40,28 +39,32 @@ Resources:
             Path: /items/{id}
             Method: DELETE
       Policies:
-        - DynamoDBCrudPolicy:
-            TableName: !Ref ItemsTable  # Attach the DynamoDB policy to this Lambda function
-
+      - DynamoDBCrudPolicy:
+          TableName:
+            Ref: ItemsTable
+    Metadata:
+      SamResourceId: CrudFunction
   ItemsTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: ItemsTable
       AttributeDefinitions:
-        - AttributeName: id
-          AttributeType: S
+      - AttributeName: id
+        AttributeType: S
       KeySchema:
-        - AttributeName: id
-          KeyType: HASH  # Partition key
-      BillingMode: PAY_PER_REQUEST  # On-demand billing
+      - AttributeName: id
+        KeyType: HASH
+      BillingMode: PAY_PER_REQUEST
       PointInTimeRecoverySpecification:
-        PointInTimeRecoveryEnabled: true  # Enables PITR for the table
-
+        PointInTimeRecoveryEnabled: true
 Outputs:
   ApiUrl:
-    Description: "Base URL for the API Gateway"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod"
-  
+    Description: Base URL for the API Gateway
+    Value:
+      Fn::Sub: https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod
   CrudFunction:
-    Description: "CRUD Lambda Function ARN"
-    Value: !GetAtt CrudFunction.Arn
+    Description: CRUD Lambda Function ARN
+    Value:
+      Fn::GetAtt:
+      - CrudFunction
+      - Arn
