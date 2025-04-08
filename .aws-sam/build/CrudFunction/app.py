@@ -3,8 +3,10 @@ import os
 import boto3
 from botocore.exceptions import ClientError
 
+
 dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table(os.environ['TABLE_NAME'])
+
 
 def lambda_handler(event, context):
     method = event['httpMethod']
@@ -22,6 +24,7 @@ def lambda_handler(event, context):
             'body': json.dumps('Method Not Allowed')
         }
 
+
 def create_item(event):
     body = json.loads(event['body'])
     item_id = body.get('id')
@@ -34,6 +37,7 @@ def create_item(event):
     except ClientError as e:
         return {'statusCode': 500, 'body': json.dumps(str(e))}
 
+
 def get_item(event):
     item_id = event['pathParameters']['id']
     try:
@@ -43,6 +47,7 @@ def get_item(event):
         return {'statusCode': 200, 'body': json.dumps(response['Item'])}
     except ClientError as e:
         return {'statusCode': 500, 'body': json.dumps(str(e))}
+
 
 def update_item(event):
     item_id = event['pathParameters']['id']
@@ -57,6 +62,7 @@ def update_item(event):
         return {'statusCode': 200, 'body': json.dumps('Item updated')}
     except ClientError as e:
         return {'statusCode': 500, 'body': json.dumps(str(e))}
+
 
 def delete_item(event):
     item_id = event['pathParameters']['id']
