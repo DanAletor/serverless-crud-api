@@ -39,11 +39,7 @@ jobs:
       run: |
         pip install aws-sam-cli
 
-    - name: Build SAM project
-      run: |
-        sam build
-
-    - name: Deploy to test environment
+    - name: Deploy to environment
       run: |
         sam deploy --stack-name serverless-crud-api-test \
                    --region eu-west-3 \
